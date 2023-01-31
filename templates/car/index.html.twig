@@ -11,10 +11,7 @@
 <div class="example-wrapper">
     <h1>Hello {{ controller_name }}! ✅</h1>
 
-    This friendly message is coming from:
-    <ul>
-        <li>Your controller at <code><a href="{{ 'C:/wamp64/www/LA_PASSERELLE/ALWAYSDATA/src/Controller/CarController.php'|file_link(0) }}">src/Controller/CarController.php</a></code></li>
-        <li>Your template at <code><a href="{{ 'C:/wamp64/www/LA_PASSERELLE/ALWAYSDATA/templates/car/index.html.twig'|file_link(0) }}">templates/car/index.html.twig</a></code></li>
-    </ul>
+    {{ form_start(form, {'attr': {'id': 'form_car', 'action':"#"}}) }}
+    {{ form_end(form) }}
 </div>
 {% endblock %}
