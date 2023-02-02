@@ -1,0 +1,24 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Hello UserController!{% endblock %}
+
+{% block body %}
+<div class="example-wrapper">
+    <h1>Bienvenu sur votre profil</h1>
+    <div class="row">
+        <div class="col-6">
+            {{ form(form) }}
+        </div>
+        <div class="col-6">
+            <a href="{{ path('app_user_presta') }}" class="btn btn-primary">Je veux devenir prestataire</a>
+            {% if app.user.roles is not null %}
+                {% if 'ROLE_PRESTA' in app.user.roles %}
+                    <a href="{{ path('app_user_presta_hours') }}" class="btn btn-primary">Déclarer des horaires</a>
+                {% endif %}
+            {% endif %}
+        </div>
+    </div>
+
+    
+</div>
+{% endblock %}

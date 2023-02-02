@@ -52,10 +52,14 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\OneToMany(mappedBy: 'user_has_booked', targetEntity: UserOpenHours::class)]
     private Collection $userOpenHoursBooked;
 
+    #[ORM\ManyToMany(targetEntity: Category::class, mappedBy: 'user')]
+    private Collection $categories;
+
     public function __construct()
     {
         $this->userOpenHours = new ArrayCollection();
         $this->userOpenHoursBooked = new ArrayCollection();
+        $this->categories = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -243,6 +247,33 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
             if ($userOpenHoursBooked->getUserHasBooked() === $this) {
                 $userOpenHoursBooked->setUserHasBooked(null);
             }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Category>
+     */
+    public function getCategories(): Collection
+    {
+        return $this->categories;
+    }
+
+    public function addCategory(Category $category): self
+    {
+        if (!$this->categories->contains($category)) {
+            $this->categories->add($category);
+            $category->addUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removeCategory(Category $category): self
+    {
+        if ($this->categories->removeElement($category)) {
+            $category->removeUser($this);
         }
 
         return $this;

@@ -1,0 +1,103 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Hello UserController!{% endblock %}
+
+{% block javascripts %}
+<script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.1/index.global.min.js'></script>
+<script>
+
+    let url = '{{ path('app_user_presta_savehours') }}';
+
+    document.addEventListener('DOMContentLoaded', function() {
+        var calendarEl = document.getElementById('calendar');
+        var calendar = new FullCalendar.Calendar(calendarEl, {
+            selectable: true,
+            locale: 'fr',
+            firstDay: 1,
+            initialView: 'dayGridMonth',
+            displayEventEnd:true,
+            headerToolbar: {
+                left: 'prev,next',
+                center: 'title',
+                right: 'dayGridMonth,timeGridWeek,list'
+            },
+            buttonText: {
+                today: 'Aujourd\'hui',
+                month: 'mois',
+                week: 'semaine',
+                list: 'Liste'
+            },
+            dateClick: function(info) {
+                var myModal = new bootstrap.Modal(document.getElementById("modalDate"), {});
+                myModal.show();
+                document.getElementById('titleDate').innerHTML = info.dateStr;
+                fetch(url, {
+                    method: 'POST',
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({date: info.dateStr})
+                })
+                .then(function(headers){
+                    return headers.text();
+                })
+                .then(function(body){
+                    document.getElementById('contentModal').innerHTML = body;
+                })
+            }/*,
+            select: function(info) {
+                alert('selected ' + info.startStr + ' to ' + info.endStr);
+            }*/
+            ,
+            events:[
+                {% set i = 0 %}
+                {% for event in app.user.userOpenHours %}
+                    {% if i != 0 %}
+                    ,
+                    {% endif %}
+                    {
+                        'title':'Creneau',
+                        'start':'{{ event.OpenHours.startHours|date('Y-m-d')}}T{{ event.OpenHours.startHours|date('H:i:s') }}',
+                        'end':'{{ event.OpenHours.endHours|date('Y-m-d')}}T{{ event.OpenHours.endHours|date('H:i:s') }}'
+                    }
+                    {% set i = i + 1 %}
+                {% endfor %}
+            ]
+        });
+        calendar.render();
+    });
+
+</script>
+{% endblock %}
+
+{% block body %}
+
+<div class="example-wrapper">
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Vos horaires</h5>
+                    <p class="card-text">Définissez vos horaires de prestation</p>
+                </div>
+            </div>
+             <div id='calendar'></div>
+        </div>
+    </div>
+</div>
+<div class="modal" tabindex="-1" role="dialog" id="modalDate">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Ajouter un evenement le <span id="titleDate"></span></h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body" id="contentModal">
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
